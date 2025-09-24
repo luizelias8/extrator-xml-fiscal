@@ -3,7 +3,23 @@ name = "extrator-xml-fiscal"
 version = "0.1.0"
 description = "Biblioteca para extrair dados de documentos fiscais XML"
 authors = ["luizelias8 <luizelias8@gmail.com>"]
+license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/luizelias8/extrator-xml-fiscal"
+repository = "https://github.com/luizelias8/extrator-xml-fiscal"
+keywords = ["nfe", "xml", "fiscal", "brasil", "sefaz"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Text Processing :: Markup :: XML",
+]
 
 [tool.poetry.dependencies]
 python = "^3.13"
