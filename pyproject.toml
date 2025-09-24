@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "extrator-xml-fiscal"
+version = "0.1.0"
+description = "Biblioteca para extrair dados de documentos fiscais XML"
+authors = ["luizelias8 <luizelias8@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
