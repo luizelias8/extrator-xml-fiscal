@@ -1,6 +1,6 @@
 # Extrator XML Fiscal
 
-Um pacote Python para extração de dados de documentos fiscais eletrônicos brasileiros (NFe) em formato XML.
+Um pacote Python para extração de dados de **documentos fiscais eletrônicos** brasileiros (NFe) e seus **eventos associados** em formato XML.
 
 ## Instalação
 
@@ -57,7 +57,7 @@ for produto in dados['produtos']:
     print(f"Produto: {produto['descricao_produto']} - Valor: {produto['valor_total_bruto']}")
 ```
 
-### Estrutura dos dados extraídos
+### Estrutura dos dados extraídos (NFe)
 
 ```python
 {
@@ -100,9 +100,64 @@ for produto in dados['produtos']:
 }
 ```
 
+---
+
+### Extraindo dados de um Cancelamento de NFe
+
+```python
+from extrator_xml_fiscal import ExtratorCancelamento
+
+# Inicialize o extrator
+extrator = ExtratorCancelamento()
+
+# Processe o arquivo XML de cancelamento
+dados = extrator.processar_arquivo('caminho/para/cancelamento.xml')
+
+# Acesse os dados extraídos
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Descrição do evento: {dados['dados_especificos']['descricao_evento']}")
+print(f"Justificativa: {dados['dados_especificos']['justificativa']}")
+print(f"Protocolo: {dados['dados_especificos']['numero_protocolo_nfe']}")
+```
+
+### Estrutura dos dados extraídos (Cancelamento)
+
+```python
+{
+    'arquivo_origem': '/caminho/para/cancelamento.xml',
+    'processado_em': '2024-01-15T11:45:12.123456',
+    'tipo_documento': 'EVENTO',
+    'dados_evento': {
+        'id_evento': 'ID110111352001142001660001875500100000000461234567890',
+        'codigo_orgao': '35',
+        'ambiente': '1',
+        'cnpj_emissor': '14200166000187',
+        'chave_nfe': '35200114200166000187550010000000046',
+        'data_evento': '2024-01-15T11:40:00',
+        'tipo_evento': '110111',
+        'numero_sequencia': '1',
+        'versao_evento': '1.00'
+    },
+    'dados_protocolo': {
+        'ambiente_protocolo': '1',
+        'codigo_status': '135',
+        'motivo': 'Evento registrado e vinculado a NFe',
+        'numero_protocolo': '135240000123456'
+    },
+    'dados_especificos': {
+        'descricao_evento': 'Cancelamento',
+        'numero_protocolo_nfe': '135240000123456',
+        'justificativa': 'Erro de emissão da nota',
+        'versao_layout': '1.00'
+    }
+}
+```
+
+---
+
 ## Campos Suportados
 
-### NFe (Nota Fiscal Eletrônica)
+### Documentos (NFe)
 
 - **Identificação**: Chave de acesso, número, série, datas, tipo de operação, etc.
 - **Emitente**: Dados completos incluindo endereço e identificação fiscal
@@ -113,18 +168,14 @@ for produto in dados['produtos']:
 - **Totais**: Todos os valores totalizadores da nota
 - **Informações Adicionais**: Informações complementares e do fisco
 
-## Extensibilidade
+### Eventos (atualmente suportados)
 
-Para criar um extrator para outros tipos de documentos fiscais:
+- **Cancelamento (110111)**:
+  - Dados comuns do evento (ID, órgão, ambiente, chave da NFe, data, sequência)
+  - Dados do protocolo (código de status, motivo, número de protocolo)
+  - Dados específicos do cancelamento (descrição do evento, justificativa, versão do layout)
 
-```python
-from extrator_xml_fiscal import ExtratorBase
-
-class ExtratorCTe(ExtratorBase):
-    def _extrair_dados(self, dados_xml):
-        # Implementar extração específica do CTe
-        return dados_estruturados
-```
+---
 
 ## Tratamento de Erros
 
@@ -134,6 +185,8 @@ O extrator trata automaticamente os seguintes cenários:
 - Estrutura XML inválida
 - Campos opcionais ausentes
 - Normalização de listas/dicionários
+
+---
 
 ## Contribuindo
 
