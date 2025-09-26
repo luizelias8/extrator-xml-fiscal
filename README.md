@@ -1,6 +1,6 @@
 # Extrator XML Fiscal
 
-Um pacote Python para extração de dados de **documentos fiscais eletrônicos** brasileiros (NFe) e seus **eventos associados** em formato XML.
+Um pacote Python para extração de dados de **documentos fiscais eletrônicos** brasileiros (NFe, CTe) e seus **eventos associados** em formato XML.
 
 ## Instalação
 
@@ -208,30 +208,100 @@ print(f"Condições de uso: {dados['dados_especificos']['condicoes_uso']}")
 
 ---
 
+### Extraindo dados de um CTe
+
+```python
+from extrator_xml_fiscal import ExtratorCTe
+
+# Inicialize o extrator
+extrator = ExtratorCTe()
+
+# Processe o arquivo XML de CTe
+dados = extrator.processar_arquivo('caminho/para/cte.xml')
+
+# Acesse os dados extraídos
+print(f"Chave do CTe: {dados['identificacao']['chave_acesso']}")
+print(f"Emitente: {dados['emitente']['razao_social']}")
+print(f"Valor total da prestação: {dados['valores_prestacao']['valor_total_prestacao']}")
+```
+
+### Estrutura dos dados extraídos (CTe)
+
+```python
+{
+    'arquivo_origem': '/caminho/para/cte.xml',
+    'processado_em': '2024-01-15T12:15:00.123456',
+    'tipo_documento': 'CTE',
+    'identificacao': {
+        'chave_acesso': '35200114200166000187570010000000046',
+        'numero_ct': '123',
+        'serie': '1',
+        'data_emissao': '2024-01-15T12:00:00',
+        'modal': '01',
+        'tipo_servico': '0',
+        'municipio_inicio': 'São Paulo',
+        'municipio_fim': 'Rio de Janeiro',
+        # ... outros campos
+    },
+    'emitente': {
+        'razao_social': 'Transportadora LTDA',
+        'cnpj': '14200166000187',
+        'endereco': { /* ... */ }
+    },
+    'remetente': { /* ... */ },
+    'destinatario': { /* ... */ },
+    'valores_prestacao': {
+        'valor_total_prestacao': '1500.00',
+        'valor_receber': '1500.00',
+        'componentes': [
+            {'nome': 'Frete peso', 'valor': '1200.00'},
+            {'nome': 'Pedágio', 'valor': '300.00'}
+        ]
+    },
+    'impostos': {
+        'valor_total_tributos': '200.00',
+        'icms': { /* ... */ }
+    },
+    'informacoes_carga': {
+        'valor_carga': '50000.00',
+        'produto_predominante': 'Eletrodomésticos',
+        'quantidades': [
+            {'codigo_unidade': '01', 'tipo_medida': 'KG', 'quantidade': '5000'}
+        ]
+    },
+    'informacoes_documentos': { /* ... */ },
+    'informacoes_modais': {
+        'rodoviario': { /* ... */ }
+    },
+    'complementares': { /* ... */ },
+    'responsavel_tecnico': { /* ... */ }
+}
+```
+
+---
+
 ## Campos Suportados
 
-### Documentos (NFe)
+### Documentos
 
-- **Identificação**: Chave de acesso, número, série, datas, tipo de operação, etc.
-- **Emitente**: Dados completos incluindo endereço e identificação fiscal
-- **Destinatário**: Dados completos incluindo endereço e identificação fiscal
-- **Produtos/Serviços**: Descrição, valores, impostos, produtos específicos (veículos, medicamentos, combustíveis, armamentos)
-- **Impostos**: ICMS, IPI, PIS, COFINS, II, Imposto Seletivo, IBS/CBS
-- **Transporte**: Dados da transportadora e volumes
-- **Totais**: Todos os valores totalizadores da nota
-- **Informações Adicionais**: Informações complementares e do fisco
+- **NFe (Nota Fiscal Eletrônica)**
+  - Identificação, emitente, destinatário, produtos/serviços, impostos, transporte, totais, informações adicionais
 
-### Eventos (atualmente suportados)
+- **CTe (Conhecimento de Transporte Eletrônico)**
+  - Identificação: chave de acesso, série, número, datas, tipo de serviço, modais, origem/destino
+  - Emitente, remetente, expedidor, recebedor, destinatário
+  - Valores da prestação: valor total, valor a receber, componentes
+  - Impostos: ICMS, ICMS partilha UF destino, valor total de tributos
+  - Informações da carga: produto predominante, valor da carga, quantidades
+  - Documentos relacionados: NFes, NFs modelo 1/1A, outros documentos
+  - Informações modais: rodoviário, aéreo, aquaviário, ferroviário, dutoviário
+  - Informações complementares e observações
+  - Responsável técnico
+
+### Eventos
 
 - **Cancelamento (110111)**
-  - Dados comuns do evento
-  - Dados do protocolo
-  - Dados específicos (descrição, justificativa, protocolo, versão layout)
-
 - **Carta de Correção (110110)**
-  - Dados comuns do evento
-  - Dados do protocolo
-  - Dados específicos (descrição do evento, texto da correção, condições de uso, versão layout)
 
 ---
 
