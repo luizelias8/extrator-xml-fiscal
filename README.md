@@ -155,6 +155,59 @@ print(f"Protocolo: {dados['dados_especificos']['numero_protocolo_nfe']}")
 
 ---
 
+### Extraindo dados de uma Carta de Correção (CCe)
+
+```python
+from extrator_xml_fiscal import ExtratorCartaCorrecao
+
+# Inicialize o extrator
+extrator = ExtratorCartaCorrecao()
+
+# Processe o arquivo XML de CCe
+dados = extrator.processar_arquivo('caminho/para/cce.xml')
+
+# Acesse os dados extraídos
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Descrição do evento: {dados['dados_especificos']['descricao_evento']}")
+print(f"Texto da correção: {dados['dados_especificos']['texto_correcao']}")
+print(f"Condições de uso: {dados['dados_especificos']['condicoes_uso']}")
+```
+
+### Estrutura dos dados extraídos (CCe)
+
+```python
+{
+    'arquivo_origem': '/caminho/para/cce.xml',
+    'processado_em': '2024-01-15T12:00:00.123456',
+    'tipo_documento': 'EVENTO',
+    'dados_evento': {
+        'id_evento': 'ID110110352001142001660001875500100000000461234567890',
+        'codigo_orgao': '35',
+        'ambiente': '1',
+        'cnpj_emissor': '14200166000187',
+        'chave_nfe': '35200114200166000187550010000000046',
+        'data_evento': '2024-01-15T11:50:00',
+        'tipo_evento': '110110',
+        'numero_sequencia': '1',
+        'versao_evento': '1.00'
+    },
+    'dados_protocolo': {
+        'ambiente_protocolo': '1',
+        'codigo_status': '135',
+        'motivo': 'Evento registrado e vinculado a NFe',
+        'numero_protocolo': '135240000654321'
+    },
+    'dados_especificos': {
+        'descricao_evento': 'Carta de Correcao',
+        'texto_correcao': 'Correção do CFOP informado incorretamente',
+        'condicoes_uso': 'A Carta de Correção não pode ser utilizada para corrigir valores fiscais',
+        'versao_layout': '1.00'
+    }
+}
+```
+
+---
+
 ## Campos Suportados
 
 ### Documentos (NFe)
@@ -170,10 +223,15 @@ print(f"Protocolo: {dados['dados_especificos']['numero_protocolo_nfe']}")
 
 ### Eventos (atualmente suportados)
 
-- **Cancelamento (110111)**:
-  - Dados comuns do evento (ID, órgão, ambiente, chave da NFe, data, sequência)
-  - Dados do protocolo (código de status, motivo, número de protocolo)
-  - Dados específicos do cancelamento (descrição do evento, justificativa, versão do layout)
+- **Cancelamento (110111)**
+  - Dados comuns do evento
+  - Dados do protocolo
+  - Dados específicos (descrição, justificativa, protocolo, versão layout)
+
+- **Carta de Correção (110110)**
+  - Dados comuns do evento
+  - Dados do protocolo
+  - Dados específicos (descrição do evento, texto da correção, condições de uso, versão layout)
 
 ---
 
