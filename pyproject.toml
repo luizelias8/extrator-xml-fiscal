@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "extrator-xml-fiscal"
-version = "1.0.0"
+version = "1.0.1"
 description = "Biblioteca para extrair dados de documentos fiscais XML"
 authors = ["luizelias8 <luizelias8@gmail.com>"]
 license = "MIT"

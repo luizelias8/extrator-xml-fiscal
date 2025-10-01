@@ -887,6 +887,12 @@ class ExtratorNFe(ExtratorBase):
 
     def _extrair_informacoes_adicionais(self, dados_infadic: Dict[str, Any]) -> Dict[str, Any]:
         """Extrair informacoes adicionais da nota fiscal."""
+        if not dados_infadic or dados_infadic is None:
+            return {
+                'informacoes_fisco': None,
+                'informacoes_complementares': None
+            }
+
         return {
             'informacoes_fisco': utils.limpar_texto(dados_infadic.get('infAdFisco')),
             'informacoes_complementares': utils.limpar_texto(dados_infadic.get('infCpl'))
