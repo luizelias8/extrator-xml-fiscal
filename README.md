@@ -280,6 +280,72 @@ print(f"Valor total da prestação: {dados['valores_prestacao']['valor_total_pre
 
 ---
 
+### Extraindo dados de um evento CT-e Autorizado
+
+```python
+from extrator_xml_fiscal import ExtratorCTeAutorizado
+
+extrator = ExtratorCTeAutorizado()
+dados = extrator.processar_arquivo('caminho/para/cte_autorizado.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Chave do CTe: {dados['dados_especificos']['cte']['chave_cte']}")
+print(f"Transportadora: {dados['dados_especificos']['emitente_cte']['razao_social']}")
+print(f"Protocolo do CTe: {dados['dados_especificos']['cte']['numero_protocolo']}")
+```
+
+### Estrutura dos dados extraídos (CT-e Autorizado)
+
+```python
+{
+    'arquivo_origem': '/caminho/para/cte_autorizado.xml',
+    'processado_em': '2026-01-02T11:54:19.123456',
+    'tipo_documento': 'CTEAUTORIZADO',
+    'dados_evento': {
+        'id_evento': 'ID6106002626010000351600027055006000017876150987331901',
+        'codigo_orgao': '91',
+        'ambiente': '1',
+        'cnpj_emissor': '33683111000107',
+        'chave_nfe': '26260100003516000270550060000178761509873319',
+        'data_evento': '2026-01-02T11:54:19-03:00',
+        'tipo_evento': '610600',
+        'numero_sequencia': '1',
+        'versao_evento': '1.00'
+    },
+    'dados_protocolo': {
+        'ambiente_protocolo': '1',
+        'versao_aplicativo': 'AN_1.6.4',
+        'codigo_orgao': '91',
+        'codigo_status': '135',
+        'motivo': 'Evento registrado e vinculado a NF-e',
+        'chave_nfe': '26260100003516000270550060000178761509873319',
+        'tipo_evento': '610600',
+        'numero_sequencia': '1',
+        'data_registro': '2026-01-02T11:54:19-03:00',
+        'numero_protocolo': '891260021945661',
+        'cnpj_destinatario': '33683111000107'  # campo adicional
+    },
+    'dados_especificos': {
+        'descricao_evento': 'CT-e Autorizado',
+        'versao_layout': '1.00',
+        'cte': {
+            'chave_cte': '41260159197158000146570010000017931000028865',
+            'modal': '01',
+            'data_emissao': '2026-01-02T11:21:19-03:00',
+            'numero_protocolo': '141260000476508',
+            'data_recebimento': '2026-01-02T11:21:20'
+        },
+        'emitente_cte': {
+            'cnpj': '59197158000146',
+            'inscricao_estadual': '9112272906',
+            'razao_social': 'TRANSPORTE EXPRESSO PHL LTDA'
+        }
+    }
+}
+```
+
+---
+
 ### Extraindo dados de eventos de Manifestação do Destinatário
 
 O pacote suporta os quatro tipos de manifestação do destinatário. Cada um possui sua própria classe extratora.
@@ -403,6 +469,7 @@ A estrutura é comum a todos os tipos de manifestação. A diferença está nos 
 
 - **Cancelamento (110111)**
 - **Carta de Correção (110110)**
+- **CT-e Autorizado (610600)**
 - **Confirmação da Operação (210200)**
 - **Ciência da Operação (210210)**
 - **Desconhecimento da Operação (210220)**
