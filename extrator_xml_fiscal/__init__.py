@@ -3,6 +3,7 @@ from .extrator_cancelamento import ExtratorCancelamento
 from .extrator_carta_correcao import ExtratorCartaCorrecao
 from .extrator_cte import ExtratorCTe
 from .extrator_cte_autorizado import ExtratorCTeAutorizado
+from .extrator_registro_passagem import ExtratorRegistroPassagem
 from .extrator_manifestacao_destinatario import (
     ExtratorConfirmacaoOperacao,
     ExtratorCienciaOperacao,
@@ -16,6 +17,7 @@ __all__ = [
     'ExtratorCartaCorrecao',
     'ExtratorCTe',
     'ExtratorCTeAutorizado',
+    'ExtratorRegistroPassagem',
     'ExtratorConfirmacaoOperacao',
     'ExtratorCienciaOperacao',
     'ExtratorDesconhecimentoOperacao',

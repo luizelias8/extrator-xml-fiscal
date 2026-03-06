@@ -346,6 +346,68 @@ print(f"Protocolo do CTe: {dados['dados_especificos']['cte']['numero_protocolo']
 
 ---
 
+### Extraindo dados de um evento Registro de Passagem de NFe
+
+```python
+from extrator_xml_fiscal import ExtratorRegistroPassagem
+
+extrator = ExtratorRegistroPassagem()
+dados = extrator.processar_arquivo('caminho/para/registro_passagem.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Posto fiscal: {dados['dados_especificos']['posto_fiscal']['nome_posto']}")
+print(f"Operador: {dados['dados_especificos']['operador']['nome']}")
+print(f"Data da passagem: {dados['dados_especificos']['passagem']['data_passagem']}")
+print(f"Placa do veículo: {dados['dados_especificos']['veiculo']['placa']}")
+```
+
+### Estrutura dos dados extraídos (Registro de Passagem de NFe)
+
+```python
+{
+    'arquivo_origem': '/caminho/para/registro_passagem.xml',
+    'processado_em': '2026-01-05T06:34:01.123456',
+    'tipo_documento': 'REGISTROPASSAGEM',
+    'dados_evento': {
+        'id_evento': 'ID6105002626010000351600027055006000017880173763418401',
+        'codigo_orgao': '91',
+        'ambiente': '1',
+        'cnpj_emissor': '12200192000169',
+        'chave_nfe': '26260100003516000270550060000178801737634184',
+        'data_evento': '2026-01-05T06:34:01-03:00',
+        'tipo_evento': '610500',
+        'numero_sequencia': '1',
+        'versao_evento': '1.00'
+    },
+    'dados_protocolo': { /* ... */ },
+    'dados_especificos': {
+        'descricao_evento': 'Registro Passagem NFe',
+        'versao_layout': '1.00',
+        'posto_fiscal': {
+            'codigo_orgao_autor': '27',
+            'codigo_posto': '0001',
+            'nome_posto': 'NOVOLINO'
+        },
+        'operador': {
+            'cpf': '65724780410',
+            'nome': 'REJANE MARIA DA SILVA'
+        },
+        'passagem': {
+            'data_passagem': '2026-01-05T06:33:01-03:00',
+            'offline': '1',       # 1 = offline, 0 = online
+            'sentido_via': 'I',   # I = entrada, S = saída
+            'indicador_retorno': 'R'
+        },
+        'veiculo': {
+            'placa': 'SOZ6E10',
+            'uf': 'PE'
+        }
+    }
+}
+```
+
+---
+
 ### Extraindo dados de eventos de Manifestação do Destinatário
 
 O pacote suporta os quatro tipos de manifestação do destinatário. Cada um possui sua própria classe extratora.
@@ -470,6 +532,7 @@ A estrutura é comum a todos os tipos de manifestação. A diferença está nos 
 - **Cancelamento (110111)**
 - **Carta de Correção (110110)**
 - **CT-e Autorizado (610600)**
+- **Registro de Passagem de NFe (610500)**
 - **Confirmação da Operação (210200)**
 - **Ciência da Operação (210210)**
 - **Desconhecimento da Operação (210220)**
