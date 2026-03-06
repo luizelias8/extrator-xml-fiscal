@@ -52,7 +52,7 @@ print(f"Número da NF: {dados['identificacao']['numero_nf']}")
 print(f"Emitente: {dados['emitente']['razao_social']}")
 print(f"Valor total: {dados['totais']['valor_total_nota_fiscal']}")
 
-# Iterate sobre os produtos
+# Itere sobre os produtos
 for produto in dados['produtos']:
     print(f"Produto: {produto['descricao_produto']} - Valor: {produto['valor_total_bruto']}")
 ```
@@ -280,6 +280,107 @@ print(f"Valor total da prestação: {dados['valores_prestacao']['valor_total_pre
 
 ---
 
+### Extraindo dados de eventos de Manifestação do Destinatário
+
+O pacote suporta os quatro tipos de manifestação do destinatário. Cada um possui sua própria classe extratora.
+
+#### Confirmação da Operação (210200)
+
+```python
+from extrator_xml_fiscal import ExtratorConfirmacaoOperacao
+
+extrator = ExtratorConfirmacaoOperacao()
+dados = extrator.processar_arquivo('caminho/para/confirmacao_operacao.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Descrição: {dados['dados_especificos']['descricao_evento']}")
+print(f"Protocolo: {dados['dados_protocolo']['numero_protocolo']}")
+```
+
+#### Ciência da Operação (210210)
+
+```python
+from extrator_xml_fiscal import ExtratorCienciaOperacao
+
+extrator = ExtratorCienciaOperacao()
+dados = extrator.processar_arquivo('caminho/para/ciencia_operacao.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Descrição: {dados['dados_especificos']['descricao_evento']}")
+print(f"Protocolo: {dados['dados_protocolo']['numero_protocolo']}")
+```
+
+#### Desconhecimento da Operação (210220)
+
+```python
+from extrator_xml_fiscal import ExtratorDesconhecimentoOperacao
+
+extrator = ExtratorDesconhecimentoOperacao()
+dados = extrator.processar_arquivo('caminho/para/desconhecimento_operacao.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Descrição: {dados['dados_especificos']['descricao_evento']}")
+print(f"Protocolo: {dados['dados_protocolo']['numero_protocolo']}")
+```
+
+#### Operação não Realizada (210240)
+
+```python
+from extrator_xml_fiscal import ExtratorOperacaoNaoRealizada
+
+extrator = ExtratorOperacaoNaoRealizada()
+dados = extrator.processar_arquivo('caminho/para/operacao_nao_realizada.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Descrição: {dados['dados_especificos']['descricao_evento']}")
+print(f"Justificativa: {dados['dados_especificos']['justificativa']}")
+print(f"Protocolo: {dados['dados_protocolo']['numero_protocolo']}")
+```
+
+### Estrutura dos dados extraídos (Manifestação do Destinatário)
+
+A estrutura é comum a todos os tipos de manifestação. A diferença está nos `dados_especificos`, onde apenas a Operação não Realizada possui o campo `justificativa`.
+
+```python
+{
+    'arquivo_origem': '/caminho/para/confirmacao_operacao.xml',
+    'processado_em': '2024-01-15T13:00:00.123456',
+    'tipo_documento': 'CONFIRMACAOOPERACAO',  # varia conforme o tipo
+    'dados_evento': {
+        'id_evento': 'ID210200262601000035160002705500600001787714895943010',
+        'codigo_orgao': '91',
+        'ambiente': '1',
+        'cnpj_emissor': '10656452007001',
+        'chave_nfe': '26260100003516000270550060000178771489594301',
+        'data_evento': '2026-01-14T11:48:16-03:00',
+        'tipo_evento': '210200',
+        'numero_sequencia': '1',
+        'versao_evento': '1.00'
+    },
+    'dados_protocolo': {
+        'ambiente_protocolo': '1',
+        'versao_aplicativo': 'AN_1.8.7',
+        'codigo_orgao': '91',
+        'codigo_status': '135',
+        'motivo': 'Evento registrado e vinculado a NF-e',
+        'chave_nfe': '26260100003516000270550060000178771489594301',
+        'tipo_evento': '210200',
+        'numero_sequencia': '1',
+        'data_registro': '2026-01-14T11:48:16-03:00',
+        'numero_protocolo': '891260595761963',
+        'descricao_evento': 'Confirmacao da Operacao',  # campo adicional
+        'cnpj_destinatario': '10656452007001'           # campo adicional
+    },
+    'dados_especificos': {
+        'descricao_evento': 'Confirmacao da Operacao',
+        'versao_layout': '1.00'
+        # apenas ExtratorOperacaoNaoRealizada inclui 'justificativa' aqui
+    }
+}
+```
+
+---
+
 ## Campos Suportados
 
 ### Documentos
@@ -302,6 +403,10 @@ print(f"Valor total da prestação: {dados['valores_prestacao']['valor_total_pre
 
 - **Cancelamento (110111)**
 - **Carta de Correção (110110)**
+- **Confirmação da Operação (210200)**
+- **Ciência da Operação (210210)**
+- **Desconhecimento da Operação (210220)**
+- **Operação não Realizada (210240)**
 
 ---
 
@@ -311,6 +416,7 @@ O extrator trata automaticamente os seguintes cenários:
 - Arquivo não encontrado
 - XML malformado
 - Estrutura XML inválida
+- Tipo de evento incompatível com o extrator utilizado
 - Campos opcionais ausentes
 - Normalização de listas/dicionários
 
