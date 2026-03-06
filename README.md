@@ -31,7 +31,7 @@ pip install -e .
 
 ### Dependências
 
-- Python 3.13+
+- Python 3.12+
 - xmltodict 1.0.2+
 
 ## Uso Básico

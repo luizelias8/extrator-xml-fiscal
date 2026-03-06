@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "extrator-xml-fiscal"
-version = "1.4.0"
+version = "1.4.1"
 description = "Biblioteca para extrair dados de documentos fiscais XML"
 authors = ["luizelias8 <luizelias8@gmail.com>"]
 license = "MIT"
@@ -13,16 +13,14 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Office/Business :: Financial",
     "Topic :: Text Processing :: Markup :: XML",
 ]
 
 [tool.poetry.dependencies]
-python = "^3.13"
+python = ">=3.12"
 xmltodict = "^1.0.2"
 
 
