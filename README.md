@@ -408,6 +408,76 @@ print(f"Placa do veículo: {dados['dados_especificos']['veiculo']['placa']}")
 
 ---
 
+### Extraindo dados de um evento MDF-e Autorizado
+
+```python
+from extrator_xml_fiscal import ExtratorMDFeAutorizado
+
+extrator = ExtratorMDFeAutorizado()
+dados = extrator.processar_arquivo('caminho/para/mdfe_autorizado.xml')
+
+print(f"Chave da NFe: {dados['dados_evento']['chave_nfe']}")
+print(f"Chave do MDF-e: {dados['dados_especificos']['mdfe']['chave_mdfe']}")
+print(f"Emitente: {dados['dados_especificos']['emitente_mdfe']['razao_social']}")
+print(f"Protocolo do MDF-e: {dados['dados_especificos']['mdfe']['numero_protocolo']}")
+```
+
+### Estrutura dos dados extraídos (MDF-e Autorizado)
+
+```python
+{
+    'arquivo_origem': '/caminho/para/mdfe_autorizado.xml',
+    'processado_em': '2026-01-27T12:28:25.123456',
+    'tipo_documento': 'MDFEAUTORIZADO',
+    'dados_evento': {
+        'id_evento': 'ID6106102626010000351600027055006000018037124893855501',
+        'codigo_orgao': '91',
+        'ambiente': '1',
+        'cnpj_emissor': '87124582000104',
+        'chave_nfe': '26260100003516000270550060000180371248938555',
+        'data_evento': '2026-01-27T12:28:25-03:00',
+        'tipo_evento': '610610',
+        'numero_sequencia': '1',
+        'versao_evento': '1.00'
+    },
+    'dados_protocolo': {
+        'ambiente_protocolo': '1',
+        'versao_aplicativo': 'AN_1.8.7',
+        'codigo_orgao': '91',
+        'codigo_status': '136',  # 136 = registrado, mas não vinculado a NF-e
+        'motivo': 'Evento registrado, mas nao vinculado a NF-e',
+        'chave_nfe': '26260100003516000270550060000180371248938555',
+        'tipo_evento': '610610',
+        'numero_sequencia': '1',
+        'data_registro': '2026-01-27T12:28:25-03:00',
+        'numero_protocolo': '891261244933717'
+    },
+    'dados_especificos': {
+        'descricao_evento': 'MDF-e Autorizado',
+        'versao_layout': '1.00',
+        'autor': {
+            'codigo_orgao_autor': '26',
+            'tipo_autor': '5',
+            'versao_aplicativo': 'RS20250914194606'
+        },
+        'mdfe': {
+            'chave_mdfe': '26260100003516000270586000000030601211840685',
+            'modal': '01',
+            'data_emissao': '2026-01-27T12:28:00',
+            'numero_protocolo': '926260000702136',
+            'data_recebimento': '2026-01-27T12:28:25'
+        },
+        'emitente_mdfe': {
+            'cnpj': '00003516000270',
+            'inscricao_estadual': '50161857',
+            'razao_social': 'MC BAUCHEMIE BRASIL INDUSTRIA E COMERCIO LTDA'
+        }
+    }
+}
+```
+
+---
+
 ### Extraindo dados de eventos de Manifestação do Destinatário
 
 O pacote suporta os quatro tipos de manifestação do destinatário. Cada um possui sua própria classe extratora.
@@ -532,6 +602,7 @@ A estrutura é comum a todos os tipos de manifestação. A diferença está nos 
 - **Cancelamento (110111)**
 - **Carta de Correção (110110)**
 - **CT-e Autorizado (610600)**
+- **MDF-e Autorizado (610610)**
 - **Registro de Passagem de NFe (610500)**
 - **Confirmação da Operação (210200)**
 - **Ciência da Operação (210210)**
