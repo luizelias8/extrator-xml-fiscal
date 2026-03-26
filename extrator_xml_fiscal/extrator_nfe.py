@@ -21,7 +21,7 @@ class ExtratorNFe(ExtratorBase):
         Returns:
             Dict: Dados estruturados da NFe
         """
-        raiz_nfe = self._encontrar_raiz(dados_xml)
+        raiz_nfe, dados_prot = self._encontrar_raiz(dados_xml)
 
         dados_nfe = {
             'identificacao': {},
@@ -31,7 +31,8 @@ class ExtratorNFe(ExtratorBase):
             'produtos': [],
             'transporte': {},
             'totais': {},
-            'informacoes_adicionais': {}
+            'informacoes_adicionais': {},
+            'protocolo_autorizacao': {}
         }
 
         # Extrai casa seção da NFe
@@ -58,25 +59,63 @@ class ExtratorNFe(ExtratorBase):
         if 'infAdic' in raiz_nfe:
             dados_nfe['informacoes_adicionais'] = self._extrair_informacoes_adicionais(raiz_nfe['infAdic'])
 
+        if dados_prot:
+            dados_nfe['protocolo_autorizacao'] = self._extrair_protocolo_autorizacao(dados_prot)
+
         return dados_nfe
 
-    def _encontrar_raiz(self, dados_xml: Dict[str, Any]) -> Dict[str, Any]:
+    def _encontrar_raiz(self, dados_xml: Dict[str, Any]) -> tuple:
         """
         Encontra a raiz da NFe no XML, lidando com diferentes estruturas.
+
+        Returns:
+            tuple: (raiz_infNFe, dados_protNFe) onde dados_protNFe pode ser None
+                   quando o XML nao possui protocolo de autorizacao (ex: NFe sem processamento SEFAZ).
         """
         try:
             estruturas_nfe = ['nfeProc', 'NFe', 'infNFe']
             estrutura_encontrada = utils.validar_estrutura_xml(dados_xml, estruturas_nfe)
 
             if estrutura_encontrada == 'nfeProc':
-                return dados_xml['nfeProc']['NFe']['infNFe']
+                nfe_proc = dados_xml['nfeProc']
+                raiz = nfe_proc['NFe']['infNFe']
+                dados_prot = nfe_proc.get('protNFe', {}).get('infProt')
+                return raiz, dados_prot
             if estrutura_encontrada == 'NFe':
-                return dados_xml['NFe']['infNFe']
+                return dados_xml['NFe']['infNFe'], None
             else: # infNFe
-                return dados_xml['infNFe']
+                return dados_xml['infNFe'], None
 
         except KeyError as e:
-            raise ValueError(f'XML não possui estrutura válida de NFe. Campo ausente: {str(e)}')
+            raise ValueError(f'XML nao possui estrutura valida de NFe. Campo ausente: {str(e)}')
+
+
+    def _extrair_protocolo_autorizacao(self, inf_prot: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extrai dados do protocolo de autorizacao da NFe (protNFe/infProt).
+
+        Presente apenas em XMLs do tipo nfeProc, que ja passaram pela SEFAZ.
+        Contem o numero do protocolo, status de autorizacao e data de recebimento.
+
+        Args:
+            inf_prot: Dicionario com os dados do infProt
+
+        Returns:
+            Dict[str, Any]: Dados do protocolo estruturados
+        """
+        if not inf_prot:
+            return {}
+
+        return {
+            'ambiente': inf_prot.get('tpAmb'),
+            'versao_aplicativo': inf_prot.get('verAplic'),
+            'chave_acesso': inf_prot.get('chNFe'),
+            'data_hora_recebimento': inf_prot.get('dhRecbto'),
+            'numero_protocolo': inf_prot.get('nProt'),
+            'digest_value': inf_prot.get('digVal'),
+            'codigo_status': inf_prot.get('cStat'),
+            'motivo_status': inf_prot.get('xMotivo'),
+        }
 
     def _extrair_identificacao(self, raiz_nfe: Dict[str, Any]) -> Dict[str, Any]:
         """Extrai dados gerais da nota fiscal."""
