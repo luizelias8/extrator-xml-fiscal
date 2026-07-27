@@ -302,6 +302,41 @@ class ExtratorNFe(ExtratorBase):
                 'impostos': self._extrair_impostos_produto(imposto)
             }
 
+            # Produtos específicos (veículos, medicamentos, armamentos, combustíveis)
+            produto.update(self._extrair_produto_especifico(prod))
+
+            # Crédito presumido (até 4 ocorrências)
+            if 'gCred' in prod:
+                produto['creditos_presumidos'] = self._extrair_creditos_presumidos(prod['gCred'])
+
+            # Detalhes de exportação (até 500 ocorrências)
+            if 'detExport' in prod:
+                produto['detalhes_exportacao'] = self._extrair_detalhes_exportacao(prod['detExport'])
+
+            # Rastreabilidade de lote (até 500 ocorrências)
+            if 'rastro' in prod:
+                produto['rastreabilidade'] = self._extrair_rastreabilidade(prod['rastro'])
+
+            # Informações específicas para NFF
+            if 'infProdNFF' in prod:
+                produto['informacoes_nff'] = self._extrair_informacoes_nff(prod['infProdNFF'])
+
+            # Informações de embalagem do produto
+            if 'infProdEmb' in prod:
+                produto['informacoes_embalagem'] = self._extrair_informacoes_embalagem(prod['infProdEmb'])
+
+            # Observações do item (grupo obsItem, no nível do det)
+            if 'obsItem' in item:
+                produto['observacoes_item'] = self._extrair_observacoes_item(item['obsItem'])
+
+            # Referência a outro DFe (grupo DFeReferenciado, no nível do det)
+            if 'DFeReferenciado' in item:
+                produto['dfe_referenciado'] = self._extrair_dfe_referenciado(item['DFeReferenciado'])
+
+            # Tributos devolvidos (grupo impostoDevol, no nível do det)
+            if 'impostoDevol' in item:
+                produto['tributos_devolvidos'] = self._extrair_tributos_devolvidos(item['impostoDevol'])
+
             produtos.append(produto)
 
         return produtos
