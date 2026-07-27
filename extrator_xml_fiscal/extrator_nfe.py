@@ -885,16 +885,34 @@ class ExtratorNFe(ExtratorBase):
 
     def _extrair_ibs_cbs(self, dados_ibs_cbs: Dict[str, Any]) -> Dict[str, Any]:
         """Extrai dados dos tributos IBS/CBS (reforma tributária)."""
-        # Tributos novos que substituirão vários tributos atuais
-        # A estrutura pode variar conforme implementação final
-        return {
-            'valor_bc': dados_ibs_cbs.get('vBC'),
-            'aliquota_ibs': dados_ibs_cbs.get('pIBS'),
-            'valor_ibs': dados_ibs_cbs.get('vIBS'),
-            'aliquota_cbs': dados_ibs_cbs.get('pCBS'),
-            'valor_cbs': dados_ibs_cbs.get('vCBS'),
-            'regime_apuracao': dados_ibs_cbs.get('regApuracao')
+        ibs_cbs = {
+            'cst': dados_ibs_cbs.get('CST'),
+            'classificacao_tributaria': dados_ibs_cbs.get('cClassTrib')
         }
+
+        # Tributação regular (gIBSCBS): valores de IBS (UF e município) e CBS
+        if 'gIBSCBS' in dados_ibs_cbs:
+            g_ibs_cbs = dados_ibs_cbs['gIBSCBS']
+            ibs_cbs['valor_bc'] = g_ibs_cbs.get('vBC')
+            ibs_cbs['valor_ibs'] = g_ibs_cbs.get('vIBS')
+
+            g_ibs_uf = g_ibs_cbs.get('gIBSUF', {})
+            ibs_cbs['ibs_uf'] = {
+                'aliquota': g_ibs_uf.get('pIBSUF'),
+                'valor': g_ibs_uf.get('vIBSUF')
+            }
+
+            g_ibs_mun = g_ibs_cbs.get('gIBSMun', {})
+            ibs_cbs['ibs_mun'] = {
+                'aliquota': g_ibs_mun.get('pIBSMun'),
+                'valor': g_ibs_mun.get('vIBSMun')
+            }
+
+            g_cbs = g_ibs_cbs.get('gCBS', {})
+            ibs_cbs['aliquota_cbs'] = g_cbs.get('pCBS')
+            ibs_cbs['valor_cbs'] = g_cbs.get('vCBS')
+
+        return ibs_cbs
 
     def _extrair_dados_transporte(self, dados_transp: Dict[str, Any]) -> Dict[str, Any]:
         """Extrai dados do transporte da mercadoria."""
