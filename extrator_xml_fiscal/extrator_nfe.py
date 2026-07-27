@@ -909,6 +909,7 @@ class ExtratorNFe(ExtratorBase):
             'valor_base_calculo_icms': icms_tot.get('vBC'),
             'valor_total_icms': icms_tot.get('vICMS'),
             'valor_total_icms_desonerado': icms_tot.get('vICMSDeson'),
+            'valor_total_icms_destinatario': icms_tot.get('vICMSUFDest'),
             'valor_base_calculo_icms_st': icms_tot.get('vBCST'),
             'valor_total_icms_st': icms_tot.get('vST'),
             'valor_total_produtos': icms_tot.get('vProd'),
