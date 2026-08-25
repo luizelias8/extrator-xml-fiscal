@@ -27,6 +27,7 @@ class ExtratorNFe(ExtratorBase):
             'identificacao': {},
             'emitente': {},
             'destinatario': {},
+            'local_entrega': {},
             'autorizados_xml': [],
             'produtos': [],
             'transporte': {},
@@ -43,6 +44,9 @@ class ExtratorNFe(ExtratorBase):
 
         if 'dest' in raiz_nfe:
             dados_nfe['destinatario'] = self._extrair_destinatario(raiz_nfe['dest'])
+
+        if 'entrega' in raiz_nfe:
+            dados_nfe['local_entrega'] = self._extrair_entrega(raiz_nfe['entrega'])
 
         if 'autXML' in raiz_nfe:
             dados_nfe['autorizados_xml'] = self._extrair_autorizados_xml(raiz_nfe['autXML'])
@@ -245,6 +249,24 @@ class ExtratorNFe(ExtratorBase):
         dados_destinatario.update(identificacao)
 
         return dados_destinatario
+
+    def _extrair_entrega(self, dados_entrega: Dict[str, Any]) -> Dict[str, Any]:
+        """Extrai dados do local de entrega (grupo entrega, informado quando difere do destinatário)."""
+        if not dados_entrega:
+            return {}
+
+        dados_local_entrega = {
+            'razao_social': dados_entrega.get('xNome'),
+            'inscricao_estadual': dados_entrega.get('IE'),
+            'email': dados_entrega.get('email'),
+            'endereco': utils.extrair_endereco_padrao(dados_entrega)
+        }
+
+        # Adiciona CNPJ ou CPF condicionalmente (local de entrega não tem ID estrangeiro)
+        identificacao = utils.extrair_cnpj_cpf_condicional(dados_entrega)
+        dados_local_entrega.update(identificacao)
+
+        return dados_local_entrega
 
     def _extrair_autorizados_xml(self, dados_autxml: List[Dict]) -> List[Dict[str, Any]]:
         """Extrai dados dos autorizados para download do XML."""
